@@ -24,6 +24,7 @@ package puzzleloginservice;
 // The session service definition.
 service Login {
   rpc Verify (LoginRequest) returns (LoginResponse);
+  rpc Register (LoginRequest) returns (LoginResponse);
 }
 
 message LoginRequest {
