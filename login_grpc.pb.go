@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LoginClient interface {
 	Verify(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Register(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	ListLogins(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Logins, error)
 }
 
 type loginClient struct {
@@ -52,12 +53,22 @@ func (c *loginClient) Register(ctx context.Context, in *LoginRequest, opts ...gr
 	return out, nil
 }
 
+func (c *loginClient) ListLogins(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Logins, error) {
+	out := new(Logins)
+	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ListLogins", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LoginServer is the server API for Login service.
 // All implementations must embed UnimplementedLoginServer
 // for forward compatibility
 type LoginServer interface {
 	Verify(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *LoginRequest) (*LoginResponse, error)
+	ListLogins(context.Context, *UserIds) (*Logins, error)
 	mustEmbedUnimplementedLoginServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedLoginServer) Verify(context.Context, *LoginRequest) (*LoginRe
 }
 func (UnimplementedLoginServer) Register(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedLoginServer) ListLogins(context.Context, *UserIds) (*Logins, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLogins not implemented")
 }
 func (UnimplementedLoginServer) mustEmbedUnimplementedLoginServer() {}
 
@@ -120,6 +134,24 @@ func _Login_Register_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Login_ListLogins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserIds)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginServer).ListLogins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/puzzleloginservice.Login/ListLogins",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginServer).ListLogins(ctx, req.(*UserIds))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Login_ServiceDesc is the grpc.ServiceDesc for Login service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Login_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _Login_Register_Handler,
+		},
+		{
+			MethodName: "ListLogins",
+			Handler:    _Login_ListLogins_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -25,6 +25,7 @@ package puzzleloginservice;
 service Login {
     rpc Verify (LoginRequest) returns (LoginResponse);
     rpc Register (LoginRequest) returns (LoginResponse);
+    rpc ListLogins (UserIds) returns (Logins);
 }
 
 message LoginRequest {
@@ -35,4 +36,12 @@ message LoginRequest {
 message LoginResponse {
     bool success = 1;
     uint64 id = 2;
+}
+
+message UserIds {
+    repeated uint64 ids = 1;    
+}
+
+message Logins {
+    repeated string list = 1;    
 }
