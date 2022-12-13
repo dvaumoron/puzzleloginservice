@@ -23,9 +23,11 @@ package puzzleloginservice;
 
 // The session service definition.
 service Login {
-    rpc Verify (LoginRequest) returns (LoginResponse);
-    rpc Register (LoginRequest) returns (LoginResponse);
+    rpc Verify (LoginRequest) returns (Response);
+    rpc Register (LoginRequest) returns (Response);
     rpc ListLogins (UserIds) returns (Logins);
+    rpc ChangeLogin (ChangeLoginRequest) returns (Response);
+    rpc ChangePassword (ChangePasswordRequest) returns (Response);
 }
 
 message LoginRequest {
@@ -33,7 +35,7 @@ message LoginRequest {
     string salted = 2;
 }
 
-message LoginResponse {
+message Response {
     bool success = 1;
     uint64 id = 2;
 }
@@ -44,4 +46,16 @@ message UserIds {
 
 message Logins {
     repeated string list = 1;    
+}
+
+message ChangeLoginRequest {
+    uint64 userId = 1;
+    string newLogin = 2;
+    string salted = 3;
+}
+
+message ChangePasswordRequest {
+    uint64 userId = 1;
+    string oldSalted = 2;
+    string newSalted = 3;
 }
