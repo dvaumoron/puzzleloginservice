@@ -28,6 +28,7 @@ service Login {
     rpc ListLogins (UserIds) returns (Logins);
     rpc ChangeLogin (ChangeLoginRequest) returns (Response);
     rpc ChangePassword (ChangePasswordRequest) returns (Response);
+    rpc ListUsers(RangeRequest) returns (Users);
 }
 
 message LoginRequest {
@@ -58,4 +59,18 @@ message ChangePasswordRequest {
     uint64 userId = 1;
     string oldSalted = 2;
     string newSalted = 3;
+}
+
+message RangeRequest {
+    uint64 start = 1;
+    uint64 end = 2;
+}
+
+message User {
+    uint64 userId = 1;
+    string login = 2;
+}
+
+message Users {
+    repeated User list = 1;
 }
