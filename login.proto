@@ -64,6 +64,7 @@ message ChangePasswordRequest {
 message RangeRequest {
     uint64 start = 1;
     uint64 end = 2;
+    string filter = 3;
 }
 
 message User {
@@ -73,4 +74,5 @@ message User {
 
 message Users {
     repeated User list = 1;
+    uint64 total = 2;
 }
