@@ -28,6 +28,7 @@ type LoginClient interface {
 	ChangeLogin(ctx context.Context, in *ChangeLoginRequest, opts ...grpc.CallOption) (*Response, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Response, error)
 	ListUsers(ctx context.Context, in *RangeRequest, opts ...grpc.CallOption) (*Users, error)
+	Delete(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
 }
 
 type loginClient struct {
@@ -92,6 +93,15 @@ func (c *loginClient) ListUsers(ctx context.Context, in *RangeRequest, opts ...g
 	return out, nil
 }
 
+func (c *loginClient) Delete(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LoginServer is the server API for Login service.
 // All implementations must embed UnimplementedLoginServer
 // for forward compatibility
@@ -102,6 +112,7 @@ type LoginServer interface {
 	ChangeLogin(context.Context, *ChangeLoginRequest) (*Response, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*Response, error)
 	ListUsers(context.Context, *RangeRequest) (*Users, error)
+	Delete(context.Context, *UserId) (*Response, error)
 	mustEmbedUnimplementedLoginServer()
 }
 
@@ -126,6 +137,9 @@ func (UnimplementedLoginServer) ChangePassword(context.Context, *ChangePasswordR
 }
 func (UnimplementedLoginServer) ListUsers(context.Context, *RangeRequest) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedLoginServer) Delete(context.Context, *UserId) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedLoginServer) mustEmbedUnimplementedLoginServer() {}
 
@@ -248,6 +262,24 @@ func _Login_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Login_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/puzzleloginservice.Login/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginServer).Delete(ctx, req.(*UserId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Login_ServiceDesc is the grpc.ServiceDesc for Login service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +310,10 @@ var Login_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _Login_ListUsers_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _Login_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
