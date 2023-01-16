@@ -21,13 +21,13 @@ option java_outer_classname = "PuzzleLoginServiceProto";
 
 package puzzleloginservice;
 
-// The session service definition.
+// The login service definition.
 service Login {
     rpc Verify (LoginRequest) returns (Response);
     rpc Register (LoginRequest) returns (Response);
-    rpc ListLogins (UserIds) returns (Logins);
     rpc ChangeLogin (ChangeLoginRequest) returns (Response);
     rpc ChangePassword (ChangePasswordRequest) returns (Response);
+    rpc GetUsers (UserIds) returns (Users);
     rpc ListUsers (RangeRequest) returns (Users);
     rpc Delete (UserId) returns (Response);
 }
@@ -42,14 +42,6 @@ message Response {
     uint64 id = 2;
 }
 
-message UserIds {
-    repeated uint64 ids = 1;    
-}
-
-message Logins {
-    repeated string list = 1;    
-}
-
 message ChangeLoginRequest {
     uint64 userId = 1;
     string newLogin = 2;
@@ -62,6 +54,10 @@ message ChangePasswordRequest {
     string newSalted = 3;
 }
 
+message UserIds {
+    repeated uint64 ids = 1;    
+}
+
 message RangeRequest {
     uint64 start = 1;
     uint64 end = 2;
@@ -71,6 +67,7 @@ message RangeRequest {
 message User {
     uint64 id = 1;
     string login = 2;
+    int64 registredAt = 3;
 }
 
 message Users {

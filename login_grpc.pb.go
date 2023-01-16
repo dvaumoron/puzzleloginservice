@@ -24,9 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type LoginClient interface {
 	Verify(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
 	Register(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
-	ListLogins(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Logins, error)
 	ChangeLogin(ctx context.Context, in *ChangeLoginRequest, opts ...grpc.CallOption) (*Response, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Response, error)
+	GetUsers(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Users, error)
 	ListUsers(ctx context.Context, in *RangeRequest, opts ...grpc.CallOption) (*Users, error)
 	Delete(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
 }
@@ -57,15 +57,6 @@ func (c *loginClient) Register(ctx context.Context, in *LoginRequest, opts ...gr
 	return out, nil
 }
 
-func (c *loginClient) ListLogins(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Logins, error) {
-	out := new(Logins)
-	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ListLogins", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *loginClient) ChangeLogin(ctx context.Context, in *ChangeLoginRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ChangeLogin", in, out, opts...)
@@ -78,6 +69,15 @@ func (c *loginClient) ChangeLogin(ctx context.Context, in *ChangeLoginRequest, o
 func (c *loginClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ChangePassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *loginClient) GetUsers(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Users, error) {
+	out := new(Users)
+	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/GetUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +108,9 @@ func (c *loginClient) Delete(ctx context.Context, in *UserId, opts ...grpc.CallO
 type LoginServer interface {
 	Verify(context.Context, *LoginRequest) (*Response, error)
 	Register(context.Context, *LoginRequest) (*Response, error)
-	ListLogins(context.Context, *UserIds) (*Logins, error)
 	ChangeLogin(context.Context, *ChangeLoginRequest) (*Response, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*Response, error)
+	GetUsers(context.Context, *UserIds) (*Users, error)
 	ListUsers(context.Context, *RangeRequest) (*Users, error)
 	Delete(context.Context, *UserId) (*Response, error)
 	mustEmbedUnimplementedLoginServer()
@@ -126,14 +126,14 @@ func (UnimplementedLoginServer) Verify(context.Context, *LoginRequest) (*Respons
 func (UnimplementedLoginServer) Register(context.Context, *LoginRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedLoginServer) ListLogins(context.Context, *UserIds) (*Logins, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListLogins not implemented")
-}
 func (UnimplementedLoginServer) ChangeLogin(context.Context, *ChangeLoginRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeLogin not implemented")
 }
 func (UnimplementedLoginServer) ChangePassword(context.Context, *ChangePasswordRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedLoginServer) GetUsers(context.Context, *UserIds) (*Users, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
 func (UnimplementedLoginServer) ListUsers(context.Context, *RangeRequest) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
@@ -190,24 +190,6 @@ func _Login_Register_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Login_ListLogins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserIds)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LoginServer).ListLogins(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/puzzleloginservice.Login/ListLogins",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginServer).ListLogins(ctx, req.(*UserIds))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Login_ChangeLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ChangeLoginRequest)
 	if err := dec(in); err != nil {
@@ -240,6 +222,24 @@ func _Login_ChangePassword_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Login_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserIds)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginServer).GetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/puzzleloginservice.Login/GetUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginServer).GetUsers(ctx, req.(*UserIds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -296,16 +296,16 @@ var Login_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Login_Register_Handler,
 		},
 		{
-			MethodName: "ListLogins",
-			Handler:    _Login_ListLogins_Handler,
-		},
-		{
 			MethodName: "ChangeLogin",
 			Handler:    _Login_ChangeLogin_Handler,
 		},
 		{
 			MethodName: "ChangePassword",
 			Handler:    _Login_ChangePassword_Handler,
+		},
+		{
+			MethodName: "GetUsers",
+			Handler:    _Login_GetUsers_Handler,
 		},
 		{
 			MethodName: "ListUsers",
