@@ -24,8 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type LoginClient interface {
 	Verify(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
 	Register(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
-	ChangeLogin(ctx context.Context, in *ChangeLoginRequest, opts ...grpc.CallOption) (*Response, error)
-	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Response, error)
+	ChangeLogin(ctx context.Context, in *ChangeRequest, opts ...grpc.CallOption) (*Response, error)
+	ChangePassword(ctx context.Context, in *ChangeRequest, opts ...grpc.CallOption) (*Response, error)
 	GetUsers(ctx context.Context, in *UserIds, opts ...grpc.CallOption) (*Users, error)
 	ListUsers(ctx context.Context, in *RangeRequest, opts ...grpc.CallOption) (*Users, error)
 	Delete(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
@@ -57,7 +57,7 @@ func (c *loginClient) Register(ctx context.Context, in *LoginRequest, opts ...gr
 	return out, nil
 }
 
-func (c *loginClient) ChangeLogin(ctx context.Context, in *ChangeLoginRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *loginClient) ChangeLogin(ctx context.Context, in *ChangeRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ChangeLogin", in, out, opts...)
 	if err != nil {
@@ -66,7 +66,7 @@ func (c *loginClient) ChangeLogin(ctx context.Context, in *ChangeLoginRequest, o
 	return out, nil
 }
 
-func (c *loginClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *loginClient) ChangePassword(ctx context.Context, in *ChangeRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleloginservice.Login/ChangePassword", in, out, opts...)
 	if err != nil {
@@ -108,8 +108,8 @@ func (c *loginClient) Delete(ctx context.Context, in *UserId, opts ...grpc.CallO
 type LoginServer interface {
 	Verify(context.Context, *LoginRequest) (*Response, error)
 	Register(context.Context, *LoginRequest) (*Response, error)
-	ChangeLogin(context.Context, *ChangeLoginRequest) (*Response, error)
-	ChangePassword(context.Context, *ChangePasswordRequest) (*Response, error)
+	ChangeLogin(context.Context, *ChangeRequest) (*Response, error)
+	ChangePassword(context.Context, *ChangeRequest) (*Response, error)
 	GetUsers(context.Context, *UserIds) (*Users, error)
 	ListUsers(context.Context, *RangeRequest) (*Users, error)
 	Delete(context.Context, *UserId) (*Response, error)
@@ -126,10 +126,10 @@ func (UnimplementedLoginServer) Verify(context.Context, *LoginRequest) (*Respons
 func (UnimplementedLoginServer) Register(context.Context, *LoginRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedLoginServer) ChangeLogin(context.Context, *ChangeLoginRequest) (*Response, error) {
+func (UnimplementedLoginServer) ChangeLogin(context.Context, *ChangeRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeLogin not implemented")
 }
-func (UnimplementedLoginServer) ChangePassword(context.Context, *ChangePasswordRequest) (*Response, error) {
+func (UnimplementedLoginServer) ChangePassword(context.Context, *ChangeRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedLoginServer) GetUsers(context.Context, *UserIds) (*Users, error) {
@@ -191,7 +191,7 @@ func _Login_Register_Handler(srv interface{}, ctx context.Context, dec func(inte
 }
 
 func _Login_ChangeLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChangeLoginRequest)
+	in := new(ChangeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -203,13 +203,13 @@ func _Login_ChangeLogin_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/puzzleloginservice.Login/ChangeLogin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginServer).ChangeLogin(ctx, req.(*ChangeLoginRequest))
+		return srv.(LoginServer).ChangeLogin(ctx, req.(*ChangeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Login_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChangePasswordRequest)
+	in := new(ChangeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -221,7 +221,7 @@ func _Login_ChangePassword_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/puzzleloginservice.Login/ChangePassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+		return srv.(LoginServer).ChangePassword(ctx, req.(*ChangeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

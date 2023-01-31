@@ -25,8 +25,8 @@ package puzzleloginservice;
 service Login {
     rpc Verify (LoginRequest) returns (Response);
     rpc Register (LoginRequest) returns (Response);
-    rpc ChangeLogin (ChangeLoginRequest) returns (Response);
-    rpc ChangePassword (ChangePasswordRequest) returns (Response);
+    rpc ChangeLogin (ChangeRequest) returns (Response);
+    rpc ChangePassword (ChangeRequest) returns (Response);
     rpc GetUsers (UserIds) returns (Users);
     rpc ListUsers (RangeRequest) returns (Users);
     rpc Delete (UserId) returns (Response);
@@ -42,16 +42,11 @@ message Response {
     uint64 id = 2;
 }
 
-message ChangeLoginRequest {
+message ChangeRequest {
     uint64 userId = 1;
     string newLogin = 2;
-    string salted = 3;
-}
-
-message ChangePasswordRequest {
-    uint64 userId = 1;
-    string oldSalted = 2;
-    string newSalted = 3;
+    string oldSalted = 3;
+    string newSalted = 4;
 }
 
 message UserIds {
