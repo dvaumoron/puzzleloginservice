@@ -1,2 +1,3 @@
 # puzzleloginservice
-service description to login
+
+[gRPC](https://grpc.io/) service description to login.
